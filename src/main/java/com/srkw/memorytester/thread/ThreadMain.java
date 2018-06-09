@@ -108,7 +108,7 @@ public class ThreadMain extends Thread {
 		
 		if(maxMemoryRecommended > maxMemory) {
 			guiMenuInstance.memoryAllocatedRecommendedText.setText(
-				"The pack recommends " + maxMemoryRecommended + "MB to run, please consider using " + (maxMemoryRecommended - maxMemory) + " more."
+					"The pack recommends " + maxMemoryRecommended + "MB to run, please consider using " + (maxMemoryRecommended - maxMemory) + " more."
 			);
 		} else {
 			guiMenuInstance.memoryAllocatedRecommendedText.setText(
@@ -117,6 +117,7 @@ public class ThreadMain extends Thread {
 		}
 		
 	}
+	
 	public void updateText() {
 		
 		long maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
@@ -135,6 +136,51 @@ public class ThreadMain extends Thread {
 					"The pack recommends " + maxMemoryRecommended + "MB to run."
 			);
 		}
+						
+		guiMainInstance.usage.add(maxMemory - freeMemory);
+		
+		long memoryTraceSum = 0;
+		for (long memoryTrace : guiMainInstance.usage) memoryTraceSum += memoryTrace;
+		long memoryTraceAverage = (memoryTraceSum - guiMainInstance.usage.get(0) + guiMainInstance.usage.get(0) * guiMainInstance.weight) / (guiMainInstance.usage.size() + guiMainInstance.weight - 1);
+		
+		double memoryTracePercentage = (memoryTraceAverage * 100) / maxMemory;
+		
+		guiMainInstance.memoryAllocatedRatioUsageText.setText(
+				"Consumption of " + memoryTraceAverage + "MB in average, representing " + memoryTracePercentage + "% of the total memory."
+		);
+			
+		if(guiMainInstance.usage.size() > 120) {
+			guiMainInstance.weight += guiMainInstance.usage.size();
+			guiMainInstance.usage.clear();
+			guiMainInstance.usage.add(memoryTraceAverage);
+		}
+		
+		if(maxMemory - freeMemory > maxMemory - maxMemory * 0.05) {
+			guiMainInstance.memorySpikesCount++;
+		}
+		
+		if(guiMainInstance.memorySpikesCount == 0) {
+			guiMainInstance.memorySpikesText.setText(
+					"No memory spikes were recorded. Minecraft is running smoothly."
+			);
+		} else if(guiMainInstance.memorySpikesCount == 1) {
+			guiMainInstance.memorySpikesText.setText(
+					"1 memory spike was recorded. This is not good."
+			);
+		} else {
+			guiMainInstance.memorySpikesText.setText(
+					guiMainInstance.memorySpikesCount + " memory spikes were recorded. This is not good."
+			);
+		}
+		
+		long hour = guiMainInstance.hoursPassed;
+		long minute = guiMainInstance.minutesPassed;
+		long second = guiMainInstance.secondsPassed;
+		long milliseconds = guiMainInstance.millisecondsPassed;
+		
+		guiMainInstance.totalTimeText.setText(
+				"Game has been running for " + hour + " hours, " + minute + " minutes, " + second + " seconds and " + milliseconds + " milliseconds."
+		);
 		
 	}
 	
