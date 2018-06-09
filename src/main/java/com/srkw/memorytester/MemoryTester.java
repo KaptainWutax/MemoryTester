@@ -17,9 +17,11 @@ public class MemoryTester {
 	public static MemoryTester instance;
 	
 	@EventHandler
-	public static void preInit(FMLPreInitializationEvent event) {new Thread(new ThreadMain()).start();}
+	public static void preInit(FMLPreInitializationEvent event) {}
+	
 	@EventHandler
 	public static void init(FMLInitializationEvent event) {}
+		
 	@EventHandler
 	public static void postInit(FMLPostInitializationEvent event) {}
 	

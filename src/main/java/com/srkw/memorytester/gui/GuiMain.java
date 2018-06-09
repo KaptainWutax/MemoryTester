@@ -10,11 +10,15 @@ import javax.swing.SwingConstants;
 
 public class GuiMain extends JFrame {
 
+	public Thread threadInstance;
+	
 	public JFrame frame;
+	
 	public JLabel memoryAllocatedText;
 	public JLabel memoryAllocatedRecommendedText;
 	
-	public GuiMain() {		
+	public GuiMain(Thread threadInstance) {	
+		this.threadInstance = threadInstance;
 		initialize();		
 	}
 	
