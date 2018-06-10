@@ -29,6 +29,7 @@ public class ThreadMain extends Thread {
 
     
     long maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
+    long totalMemory = Runtime.getRuntime().totalMemory() / 1000000;
     long freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
 
     public ThreadMain() {
@@ -42,6 +43,7 @@ public class ThreadMain extends Thread {
         parseData();
         
         maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
+        totalMemory = Runtime.getRuntime().totalMemory() / 1000000;
         freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
 
         if (maxMemoryRecommended > maxMemory && forceCrash) {
@@ -154,6 +156,7 @@ public class ThreadMain extends Thread {
     private void holdPause() {
 
         maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
+        totalMemory = Runtime.getRuntime().totalMemory() / 1000000;
         freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
 
         guiMenuInstance.memoryAllocatedText.setText(
@@ -175,10 +178,11 @@ public class ThreadMain extends Thread {
     private void updateText() {
 
         maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
+        totalMemory = Runtime.getRuntime().totalMemory() / 1000000;
         freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
 
         guiMainInstance.memoryAllocatedText.setText(
-                (maxMemory - freeMemory) + "MB of memory in use over " + (maxMemory) + "MB."
+                (totalMemory - freeMemory) + "MB of memory in use over " + (maxMemory) + "MB."
         );
 
         if (maxMemoryRecommended > maxMemory) {
@@ -191,7 +195,7 @@ public class ThreadMain extends Thread {
             );
         }
 
-        guiMainInstance.usage.add(maxMemory - freeMemory);
+        guiMainInstance.usage.add(totalMemory - freeMemory);
 
         long memoryTraceSum = 0;
         for (long memoryTrace : guiMainInstance.usage) memoryTraceSum += memoryTrace;
