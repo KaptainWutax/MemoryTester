@@ -36,6 +36,7 @@ public class PluginLoader implements IFMLLoadingPlugin {
             try {
                 Thread.currentThread().sleep(100);
             } catch (InterruptedException e) {
+                System.out.println(e);
             }
         }
 

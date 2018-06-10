@@ -11,7 +11,7 @@ import java.awt.event.WindowListener;
 
 public class GuiMenu extends JFrame {
 
-    public ThreadMain threadInstance;
+    private ThreadMain threadInstance;
 
     public JFrame frame;
 

@@ -1,14 +1,16 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "memorytester",
+  "name": "MemoryTester",
+  "description": "A mod which gives the pack makers ability to set an minimum RAM.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": [
+    "KaptainWutax,StrikerRocker"
+  ],
+  "credits": "Thanks to kreezxil for giving this idea and thanks to forge devs",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
