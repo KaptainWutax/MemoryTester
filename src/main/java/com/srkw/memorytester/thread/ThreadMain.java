@@ -1,21 +1,35 @@
 package com.srkw.memorytester.thread;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import com.srkw.memorytester.gui.GuiForceCrash;
 import com.srkw.memorytester.gui.GuiMain;
 import com.srkw.memorytester.gui.GuiMenu;
 
-import java.io.*;
-
 public class ThreadMain extends Thread {
 
-    public boolean isInMenu = true;
-    public boolean shouldGameStart = true;
+	//GUIS
     private GuiMenu guiMenuInstance;
     private GuiMain guiMainInstance;
     private GuiForceCrash guiForceCrashInstance;
+    
+    //CONFIG
     private int maxMemoryRecommended;
     private long memoryTextUpdateDelay;
     private boolean forceCrash = false;
+    
+    //LISTENER FLAGS
+    public boolean isInMenu = true;
+    public boolean shouldGameStart = true;
+
+    
+    long maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
+    long freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
 
     public ThreadMain() {
     }
@@ -26,15 +40,18 @@ public class ThreadMain extends Thread {
         Thread.currentThread().setName("MemoryTesterThread");
 
         parseData();
+        
+        maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
+        freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
 
-        if (Runtime.getRuntime().maxMemory() / 1000000 < maxMemoryRecommended && forceCrash) {
+        if (maxMemoryRecommended > maxMemory && forceCrash) {
             guiForceCrashInstance = new GuiForceCrash((ThreadMain) Thread.currentThread());
             guiForceCrashInstance.frame.setVisible(true);
             guiForceCrashInstance.crash.setText(
                     "The game was forced crashed because of an insufficient memory allocation."
             );
             guiForceCrashInstance.currentAllocation.setText(
-                    "Your current memory allocation is " + Runtime.getRuntime().maxMemory() / 1000000 + "MB."
+                    "Your current memory allocation is " + maxMemory + "MB."
             );
             guiForceCrashInstance.recommendedAllocation.setText(
                     "Please allocate " + maxMemoryRecommended + "MB before running."
@@ -42,12 +59,9 @@ public class ThreadMain extends Thread {
             guiForceCrashInstance.crashInfo.setText(
                     "If you would like to play with a lower allocation, contact the pack maker to adjust the settings."
             );
+            
             while (true) {
-                try {
-                    Thread.currentThread().sleep(100);
-                } catch (InterruptedException e) {
-                    System.out.println(e);
-                }
+                try {Thread.currentThread().sleep(100);} catch (InterruptedException e) {}
             }
         }
 
@@ -78,22 +92,20 @@ public class ThreadMain extends Thread {
     private void parseData() {
 
         FileReader input = null;
-        try {
-            input = new FileReader("config/memorytester.txt");
-        } catch (FileNotFoundException e2) {
-            BufferedWriter writer;
+        BufferedWriter writer;
+        try {input = new FileReader("config/memorytester.txt");} 
+        catch (FileNotFoundException e) {
             try {
                 writer = new BufferedWriter(new FileWriter("config/memorytester.txt"));
-                writer.write("RecommendedMemoryAllocation=1024\n"
+                writer.write(
+                		"RecommendedMemoryAllocation=1024\n"
                         + "MemoryTextUpdateDelay=500\n"
-                        + "ForceCrash=false"
+                        + "ForceCrash=false\n"
                 );
                 writer.flush();
                 writer.close();
                 input = new FileReader("config/memorytester.txt");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e2) {}
 
         }
 
@@ -141,8 +153,8 @@ public class ThreadMain extends Thread {
 
     private void holdPause() {
 
-        long maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
-        long freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
+        maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
+        freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
 
         guiMenuInstance.memoryAllocatedText.setText(
                 "You have " + maxMemory + "MB of memory allocated."
@@ -162,8 +174,8 @@ public class ThreadMain extends Thread {
 
     private void updateText() {
 
-        long maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
-        long freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
+        maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
+        freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
 
         guiMainInstance.memoryAllocatedText.setText(
                 (maxMemory - freeMemory) + "MB of memory in use over " + (maxMemory) + "MB."

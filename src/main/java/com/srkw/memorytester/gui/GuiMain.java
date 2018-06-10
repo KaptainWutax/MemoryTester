@@ -1,30 +1,39 @@
 package com.srkw.memorytester.gui;
 
-import com.srkw.memorytester.thread.ThreadMain;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GuiMain extends JFrame {
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
+import com.srkw.memorytester.thread.ThreadMain;
+
+public class GuiMain extends JFrame {
+ 
+    private ThreadMain threadInstance;
+    
     public JFrame frame;
+    
     public JLabel memoryAllocatedText;
     public JLabel memoryAllocatedRecommendedText;
-    public JLabel memoryAllocatedRatioUsageText;
+    public JLabel memoryAllocatedRatioUsageText;    
     public JLabel memorySpikesText;
     public JLabel totalTimeText;
+    
     public ArrayList<Long> usage = new ArrayList<>();
     public long weight = 1;
+    
     public int memorySpikesCount = 0;
     public long millisecondsPassed = 0;
     public long secondsPassed = 0;
     public long minutesPassed = 0;
     public long hoursPassed = 0;
+    
     public Timer timer = new Timer();
-    private ThreadMain threadInstance;
     private TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {

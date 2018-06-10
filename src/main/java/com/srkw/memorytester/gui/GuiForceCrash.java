@@ -1,20 +1,27 @@
 package com.srkw.memorytester.gui;
 
-import com.srkw.memorytester.thread.ThreadMain;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+
+import com.srkw.memorytester.thread.ThreadMain;
+
 public class GuiForceCrash extends JFrame {
 
+    private ThreadMain threadInstance;
+    
     public JFrame frame;
+    
     public JLabel crash;
     public JLabel currentAllocation;
     public JLabel recommendedAllocation;
     public JLabel crashInfo;
-    private ThreadMain threadInstance;
+
 
     public GuiForceCrash(ThreadMain threadInstance) {
         this.threadInstance = threadInstance;

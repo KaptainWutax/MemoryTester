@@ -1,6 +1,7 @@
 package com.srkw.memorytester;
 
 import com.srkw.memorytester.utility.Reference;
+
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;

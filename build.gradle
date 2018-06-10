@@ -50,7 +50,7 @@ processResources {
 
 jar {
     manifest.attributes(
-            "MemoryTester": "com.srkw.memorytester.utility.PluginLoader",
+            "FMLCorePlugin": "com.srkw.memorytester.utility.PluginLoader",
             "ModSide": "Client"
     )
 }
