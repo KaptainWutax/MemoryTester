@@ -8,6 +8,7 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'java'
 
 version = "0.1"
 group = "com.srkw.memorytester"
@@ -21,11 +22,13 @@ compileJava {
 minecraft {
     version = "1.12.2-14.23.4.2705"
     runDir = "run"
-
-    mappings = "snapshot_20171003"
-     def args = [
-            "-Dfml.coreMods.load=com.srkw.memorytester.utility.PluginLoader",
+    mappings = "snapshot_20171003"   
+    makeObfSourceJar false
+    
+    def args = [
+            "-Dfml.coreMods.load=com.srkw.memorytester.utility.PluginLoader"
     ]
+    
     clientJvmArgs.addAll(args)
     serverJvmArgs.addAll(args)
 }
