@@ -1,8 +1,6 @@
 package com.srkw.memorytester;
 
-import com.srkw.memorytester.thread.ThreadMain;
-import com.srkw.memorytester.utility.*;
-
+import com.srkw.memorytester.utility.Reference;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -13,17 +11,20 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid = Reference.MOD_ID, name = Reference.NAME, version = Reference.VERSION)
 public class MemoryTester {
 
-	@Instance
-	public static MemoryTester instance;
-	
-	@EventHandler
-	public static void preInit(FMLPreInitializationEvent event) {}
-	
-	@EventHandler
-	public static void init(FMLInitializationEvent event) {}
-		
-	@EventHandler
-	public static void postInit(FMLPostInitializationEvent event) {}
-	
+    @Instance
+    public static MemoryTester instance;
+
+    @EventHandler
+    public static void preInit(FMLPreInitializationEvent event) {
+    }
+
+    @EventHandler
+    public static void init(FMLInitializationEvent event) {
+    }
+
+    @EventHandler
+    public static void postInit(FMLPostInitializationEvent event) {
+    }
+
 }
 
