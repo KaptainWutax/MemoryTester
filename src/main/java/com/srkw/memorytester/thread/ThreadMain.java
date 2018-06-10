@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import com.srkw.memorytester.gui.GuiForceCrash;
 import com.srkw.memorytester.gui.GuiMain;
 import com.srkw.memorytester.gui.GuiMenu;
 
@@ -15,11 +16,13 @@ public class ThreadMain extends Thread {
 	
 	GuiMenu guiMenuInstance;
 	GuiMain guiMainInstance;
+	GuiForceCrash guiForceCrashInstance;
 	
 	public int maxMemoryRecommended;
 	public long memoryTextUpdateDelay;
 	public boolean isInMenu = true;
 	public boolean shouldGameStart = true;
+	public boolean forceCrash = false;
 
 	public ThreadMain() {	
 	}
@@ -31,6 +34,24 @@ public class ThreadMain extends Thread {
 		
 		parseData();
 		
+		if(Runtime.getRuntime().maxMemory() / 1000000 < maxMemoryRecommended && forceCrash) {
+			guiForceCrashInstance = new GuiForceCrash((ThreadMain) Thread.currentThread());
+			guiForceCrashInstance.frame.setVisible(true);
+			guiForceCrashInstance.crash.setText(
+					"The game was forced crashed because of an insufficient memory allocation."
+			);
+			guiForceCrashInstance.currentAllocation.setText(					
+					"Your current memory allocation is " + Runtime.getRuntime().maxMemory() / 1000000 + "MB."
+			);
+			guiForceCrashInstance.recommendedAllocation.setText(					
+					"Please allocate " + maxMemoryRecommended + "MB before running."
+			);
+			guiForceCrashInstance.crashInfo.setText(
+					"If you would like to play with a lower allocation, contact the pack maker to adjust the settings."
+			);
+			while(true) {try {Thread.currentThread().sleep(100);} catch (InterruptedException e) {}}
+		}
+		
 		guiMenuInstance = new GuiMenu((ThreadMain) Thread.currentThread());
 		guiMenuInstance.frame.setVisible(true);
 		
@@ -40,7 +61,7 @@ public class ThreadMain extends Thread {
 				holdPause();
 			} else {
 				if(guiMainInstance == null) {
-					guiMainInstance = new GuiMain(Thread.currentThread());
+					guiMainInstance = new GuiMain((ThreadMain) Thread.currentThread());
 					guiMainInstance.frame.setVisible(true);
 				}
 				updateText();
@@ -60,7 +81,9 @@ public class ThreadMain extends Thread {
 			BufferedWriter writer;
 			try {
 				writer = new BufferedWriter(new FileWriter("config/memorytester.txt"));
-				writer.write("RecommendedMemoryAllocation=1024\nMemoryTextUpdateDelay=500");
+				writer.write("RecommendedMemoryAllocation=1024\n"
+						+ "MemoryTextUpdateDelay=500\n"
+						+ "ForceCrash=false");
 				writer.flush();
 				writer.close();
 				input = new FileReader("config/memorytester.txt");
@@ -88,6 +111,16 @@ public class ThreadMain extends Thread {
 			for(int i = 0 ; i < data.length ; i++) {
 				if(data[i].trim().contains("MemoryTextUpdateDelay")) {
 					memoryTextUpdateDelay = Integer.parseInt(data[i + 1].trim());
+				}
+			}
+			
+			myLine = bufRead.readLine();  
+			data = myLine.split("=");
+			
+			for(int i = 0 ; i < data.length ; i++) {
+				if(data[i].trim().contains("ForceCrash")) {
+					if(data[i + 1].trim().contains("true")) {forceCrash = true;}
+					if(data[i + 1].trim().contains("false")) {forceCrash = false;}
 				}
 			}
 			

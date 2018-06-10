@@ -12,9 +12,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
+import com.srkw.memorytester.thread.ThreadMain;
+
 public class GuiMain extends JFrame {
 
-	public Thread threadInstance;
+	public ThreadMain threadInstance;
 	
 	public JFrame frame;
 	
@@ -56,7 +58,7 @@ public class GuiMain extends JFrame {
 		}};
 	
 	 
-	public GuiMain(Thread threadInstance) {	
+	public GuiMain(ThreadMain threadInstance) {	
 		this.threadInstance = threadInstance;
 		timer.scheduleAtFixedRate(timerTask, 1, 1);
 		initialize();		
