@@ -106,7 +106,7 @@ public class ThreadMain extends Thread {
 
         if (maxMemoryRecommended > maxMemory) {
             guiMenuInstance.memoryAllocatedRecommendedText.setText(
-                    "The pack recommends " + maxMemoryRecommended + "MB to run, please consider using " + (maxMemoryRecommended - maxMemory) + " more."
+                    "The pack recommends " + maxMemoryRecommended + "MB to run, please consider using " + (maxMemoryRecommended - maxMemory) + "MB more."
             );
         } else {
             guiMenuInstance.memoryAllocatedRecommendedText.setText(
