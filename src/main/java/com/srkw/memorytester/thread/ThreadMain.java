@@ -2,196 +2,208 @@ package com.srkw.memorytester.thread;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import com.srkw.memorytester.gui.GuiErrorCrash;
 import com.srkw.memorytester.gui.GuiForceCrash;
 import com.srkw.memorytester.gui.GuiMain;
 import com.srkw.memorytester.gui.GuiMenu;
 
 public class ThreadMain extends Thread {
 
-	//GUIS
+	//GUI
     private GuiMenu guiMenuInstance;
     private GuiMain guiMainInstance;
     private GuiForceCrash guiForceCrashInstance;
+    private GuiErrorCrash guiErrorCrashInstance;
     
     //CONFIG
-    private int maxMemoryRecommended;
-    private long memoryTextUpdateDelay;
+    private int recommendedMemoryAllocation = 1024;
+    private long memoryTextUpdateDelay = 500;
     private boolean forceCrash = false;
+    private String crashInfo = "If you would like to play with a lower allocation, contact the pack maker to adjust the settings.";
     
-    //LISTENER FLAGS
+    //LISTENER FLAG
     public boolean isInMenu = true;
     public boolean shouldGameStart = true;
+ 
+    //HELPERS
+    String threadName;
+    long maxMemory;
+    long totalMemory;
+    long freeMemory;
 
-    
-    long maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
-    long totalMemory = Runtime.getRuntime().totalMemory() / 1000000;
-    long freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
-
-    public ThreadMain() {
-    }
+    public ThreadMain() {}
 
     @Override
     public void run() {
-
-        Thread.currentThread().setName("MemoryTesterThread");
-
-        parseData();
+        setThreadName("MemoryTesterThread");
+        updateMemoryStatistics();
+        configLoadData();
         
+        if (recommendedMemoryAllocation > maxMemory && forceCrash) {inGuiForceCrashAction();}
+        
+        while (true) {  
+            if (isInMenu) {inGuiMenuAction();} else {inGuiMainAction();}
+            performSleep(memoryTextUpdateDelay);
+        }
+    }
+    
+    private void setThreadName(String name) {
+    	Thread.currentThread().setName(name);
+    	this.threadName = name;
+    }
+      
+    private void updateMemoryStatistics() {
         maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
         totalMemory = Runtime.getRuntime().totalMemory() / 1000000;
         freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
-
-        if (maxMemoryRecommended > maxMemory && forceCrash) {
-            guiForceCrashInstance = new GuiForceCrash((ThreadMain) Thread.currentThread());
-            guiForceCrashInstance.frame.setVisible(true);
-            guiForceCrashInstance.crash.setText(
-                    "The game was forced crashed because of an insufficient memory allocation."
-            );
-            guiForceCrashInstance.currentAllocation.setText(
-                    "Your current memory allocation is " + maxMemory + "MB."
-            );
-            guiForceCrashInstance.recommendedAllocation.setText(
-                    "Please allocate " + maxMemoryRecommended + "MB before running."
-            );
-            guiForceCrashInstance.crashInfo.setText(
-                    "If you would like to play with a lower allocation, contact the pack maker to adjust the settings."
-            );
-            
-            while (true) {
-                try {Thread.currentThread().sleep(100);} catch (InterruptedException e) {}
-            }
-        }
-
-        guiMenuInstance = new GuiMenu((ThreadMain) Thread.currentThread());
-        guiMenuInstance.frame.setVisible(true);
-
-        while (true) {
-
-            if (isInMenu) {
-                holdPause();
-            } else {
-                if (guiMainInstance == null) {
-                    guiMainInstance = new GuiMain((ThreadMain) Thread.currentThread());
-                    guiMainInstance.frame.setVisible(true);
-                }
-                updateText();
-            }
-
-            try {
-                Thread.currentThread().sleep(memoryTextUpdateDelay);
-            } catch (InterruptedException e) {
-                System.out.println(e);
-            }
-        }
-
     }
 
-    private void parseData() {
+    private void inGuiMenuAction() {
+    	if (guiMenuInstance == null) {
+            guiMenuInstance = new GuiMenu((ThreadMain) Thread.currentThread());
+            guiMenuInstance.frame.setVisible(true);
+    	}
+    	updateGuiMenu();
+    }
+    
+    private void inGuiMainAction() {
+        if (guiMainInstance == null) {
+            guiMainInstance = new GuiMain((ThreadMain) Thread.currentThread());
+            guiMainInstance.frame.setVisible(true);
+        }
+        updateGuiMain();
+    }
 
+    private void inGuiForceCrashAction() {   	
+    	if(guiForceCrashInstance == null) {
+    		guiForceCrashInstance = new GuiForceCrash((ThreadMain) Thread.currentThread());
+    		guiForceCrashInstance.frame.setVisible(true);
+    	}
+    	updateGuiForceCrash();
+        while (true) {performSleep(memoryTextUpdateDelay);}
+    }
+    
+    
+    private void inGuiErrorCrash(String errorLocation) {
+    	if(guiErrorCrashInstance == null) {
+    		guiErrorCrashInstance = new GuiErrorCrash((ThreadMain) Thread.currentThread());
+    		guiErrorCrashInstance.frame.setVisible(true);
+    	}
+    	updateGuiErrorCrash(errorLocation);
+    	while (true) {performSleep(memoryTextUpdateDelay);}
+    }
+ 
+    private void performSleep(long millis) {
+        try {Thread.currentThread().sleep(millis);} 
+        catch (InterruptedException e) {;}
+    }
+    
+    private void configLoadData() {
+    	
         FileReader input = null;
-        BufferedWriter writer;
-        try {input = new FileReader("config/memorytester.txt");} 
-        catch (FileNotFoundException e) {
+        BufferedWriter writer = null;
+        
+        try {input = new FileReader("config/MemoryTester/general.txt");} 
+        catch (FileNotFoundException e) {     	
             try {
-                writer = new BufferedWriter(new FileWriter("config/memorytester.txt"));
+            	File dir = new File("config/MemoryTester");
+            	dir.mkdir();
+                writer = new BufferedWriter(new FileWriter("config/MemoryTester/general.txt"));
                 writer.write(
-                		"RecommendedMemoryAllocation=1024\n"
-                        + "MemoryTextUpdateDelay=500\n"
-                        + "ForceCrash=false\n"
+                		"RecommendedMemoryAllocation=" + recommendedMemoryAllocation + "\n"
+                        + "MemoryTextUpdateDelay=" + memoryTextUpdateDelay + "\n"
+                        + "ForceCrash=" + forceCrash + "\n"
+                        + "CrashInfo=" + crashInfo + "\n"
                 );
                 writer.flush();
                 writer.close();
-                input = new FileReader("config/memorytester.txt");
-            } catch (IOException e2) {}
+                input = new FileReader("config/MemoryTester/general.txt");
+            } catch (IOException e2) {inGuiErrorCrash("Unexpected error in " + "config/MemoryTester/general.txt");}
 
         }
-
-        try {
-            BufferedReader bufRead = new BufferedReader(input);
-
-            String myLine = bufRead.readLine();
-            String[] data = myLine.split("=");
-
-            for (int i = 0; i < data.length; i++) {
-                if (data[i].trim().contains("RecommendedMemoryAllocation")) {
-                    maxMemoryRecommended = Integer.parseInt(data[i + 1].trim());
-                }
-            }
-
-            myLine = bufRead.readLine();
-            data = myLine.split("=");
-
-            for (int i = 0; i < data.length; i++) {
-                if (data[i].trim().contains("MemoryTextUpdateDelay")) {
-                    memoryTextUpdateDelay = Integer.parseInt(data[i + 1].trim());
-                }
-            }
-
-            myLine = bufRead.readLine();
-            data = myLine.split("=");
-
-            for (int i = 0; i < data.length; i++) {
-                if (data[i].trim().contains("ForceCrash")) {
-                    if (data[i + 1].trim().contains("true")) {
-                        forceCrash = true;
-                    }
-                    if (data[i + 1].trim().contains("false")) {
-                        forceCrash = false;
-                    }
-                }
-            }
-
-            bufRead.close();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+        
+        try {configParseData(input);} catch (IOException e) {inGuiErrorCrash("ForceCrash entry in " + "config/MemoryTester/general.txt");}
 
     }
+    
+    private void configParseData(FileReader input) throws IOException {
+    	
+    	BufferedReader bufRead = new BufferedReader(input);
 
-    private void holdPause() {
+        String myLine = bufRead.readLine();
+        String[] data = myLine.split("=");
+        Boolean illegalArgument = false;
 
-        maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
-        totalMemory = Runtime.getRuntime().totalMemory() / 1000000;
-        freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
+            if (data[0].trim().contains("RecommendedMemoryAllocation")) {
+            	recommendedMemoryAllocation = Integer.parseInt(data[1].trim());
+            } else {inGuiErrorCrash("RecommendedMemoryAllocation entry in " + "config/MemoryTester/general.txt");}
 
+        myLine = bufRead.readLine();
+        data = myLine.split("=");
+
+            if (data[0].trim().contains("MemoryTextUpdateDelay")) {
+                memoryTextUpdateDelay = Integer.parseInt(data[1].trim());
+            } else {inGuiErrorCrash("MemoryTextUpdateDelay entry in " + "config/MemoryTester/general.txt");}
+
+        myLine = bufRead.readLine();
+        data = myLine.split("=");
+
+            if (data[0].trim().contains("ForceCrash")) {
+            	forceCrash = Boolean.parseBoolean(data[1].trim());
+            } else {inGuiErrorCrash("ForceCrash entry in " + "config/MemoryTester/general.txt");}
+        
+        myLine = bufRead.readLine();
+        data = myLine.split("=");
+
+            if (data[0].trim().contains("CrashInfo")) {
+                crashInfo = data[1].trim();
+            } else {inGuiErrorCrash("CrashInfo entry in " + "config/MemoryTester/general.txt");}
+
+        bufRead.close();
+        
+    }
+
+    private void updateGuiMenu() {
+    	
+        updateMemoryStatistics();
+        
         guiMenuInstance.memoryAllocatedText.setText(
                 "You have " + maxMemory + "MB of memory allocated."
         );
 
-        if (maxMemoryRecommended > maxMemory) {
+        if (recommendedMemoryAllocation > maxMemory) {
             guiMenuInstance.memoryAllocatedRecommendedText.setText(
-                    "The pack recommends " + maxMemoryRecommended + "MB to run, please consider using " + (maxMemoryRecommended - maxMemory) + " more."
+                    "The pack recommends " + recommendedMemoryAllocation + "MB to run, please consider using " + (recommendedMemoryAllocation - maxMemory) + " more."
             );
         } else {
             guiMenuInstance.memoryAllocatedRecommendedText.setText(
-                    "The pack recommends " + maxMemoryRecommended + "MB to run."
+                    "The pack recommends " + recommendedMemoryAllocation + "MB to run."
             );
         }
 
     }
 
-    private void updateText() {
-
-        maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
-        totalMemory = Runtime.getRuntime().totalMemory() / 1000000;
-        freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
+    private void updateGuiMain() {
+    	
+        updateMemoryStatistics();
 
         guiMainInstance.memoryAllocatedText.setText(
                 (totalMemory - freeMemory) + "MB of memory in use over " + (maxMemory) + "MB."
         );
 
-        if (maxMemoryRecommended > maxMemory) {
+        if (recommendedMemoryAllocation > maxMemory) {
             guiMainInstance.memoryAllocatedRecommendedText.setText(
-                    "The pack recommends " + maxMemoryRecommended + "MB to run, please consider using " + (maxMemoryRecommended - maxMemory) + " more."
+                    "The pack recommends " + recommendedMemoryAllocation + "MB to run, please consider using " + (recommendedMemoryAllocation - maxMemory) + " more."
             );
         } else {
             guiMainInstance.memoryAllocatedRecommendedText.setText(
-                    "The pack recommends " + maxMemoryRecommended + "MB to run."
+                    "The pack recommends " + recommendedMemoryAllocation + "MB to run."
             );
         }
 
@@ -240,6 +252,35 @@ public class ThreadMain extends Thread {
                 "Game has been running for " + hour + " hours, " + minute + " minutes, " + second + " seconds and " + milliseconds + " milliseconds."
         );
 
+    }
+     
+    private void updateGuiForceCrash() {  
+    	
+        guiForceCrashInstance.crash.setText(
+                "The game was forced crashed because of an insufficient memory allocation."
+        );
+        guiForceCrashInstance.currentAllocation.setText(
+                "Your current memory allocation is " + maxMemory + "MB."
+        );
+        guiForceCrashInstance.recommendedAllocation.setText(
+                "Please allocate " + recommendedMemoryAllocation + "MB before running."
+        );
+        guiForceCrashInstance.crashInfo.setText(
+                crashInfo
+        );
+        
+    }
+    
+    private void updateGuiErrorCrash(String errorLocation) {
+    	
+    	guiErrorCrashInstance.crash.setText(
+    			"The game was forced crashed because of illegal configuration."
+    	);
+    	
+    	guiErrorCrashInstance.crashInfo.setText(
+    			errorLocation
+    	);
+    	
     }
 
 }
