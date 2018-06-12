@@ -2,9 +2,12 @@ package com.srkw.memorytester.gui;
 
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -87,6 +90,70 @@ public class GuiErrorCrash {
         crashInfo.setHorizontalAlignment(SwingConstants.CENTER);
         crashInfo.setBounds(textCenterX + textOffsetX, textCenterY + textOffsetY + 60, textWidth, textHeight);
         frame.getContentPane().add(crashInfo);
+        
+        int buttonWidth = 500;
+        int buttonCenterX = frame.getWidth() / 2 - buttonWidth / 2;
+        int buttonOffsetX = 0;
+
+        int buttonHeight = 40;
+        int buttonCenterY = frame.getHeight() / 2 - buttonHeight / 2;
+        int buttonOffsetY = -250;
+
+        JButton resetButton = new JButton("Reset Config");
+        resetButton.setEnabled(true);
+        resetButton.setBounds(buttonCenterX + buttonOffsetX, buttonCenterY + buttonOffsetY, buttonWidth, buttonHeight);
+        frame.getContentPane().add(resetButton);
+        
+        resetButton.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				threadInstance.generalData.setDefaultDataToThread();
+                frame.setEnabled(false);
+                frame.setVisible(false);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {}
+			
+        });
+
+        JButton quitButton = new JButton("Quit");
+        quitButton.setEnabled(true);
+        quitButton.setBounds(buttonCenterX + buttonOffsetX, buttonCenterY + buttonOffsetY + 50, buttonWidth, buttonHeight);
+        frame.getContentPane().add(quitButton);
+        
+        quitButton.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent arg0) {
+                threadInstance.shouldGameStart = false;
+                frame.setEnabled(false);
+                frame.setVisible(false);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent arg0) {}
+
+            @Override
+            public void mouseExited(MouseEvent arg0) {}
+
+            @Override
+            public void mousePressed(MouseEvent arg0) {}
+
+            @Override
+            public void mouseReleased(MouseEvent arg0) {}
+
+        });
         
     }
 }

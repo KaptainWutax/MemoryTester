@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import com.srkw.memorytester.data.DataGeneral;
 import com.srkw.memorytester.gui.GuiErrorCrash;
 import com.srkw.memorytester.gui.GuiForceCrash;
 import com.srkw.memorytester.gui.GuiMain;
@@ -22,28 +23,37 @@ public class ThreadMain extends Thread {
     private GuiErrorCrash guiErrorCrashInstance;
     
     //CONFIG
-    private int recommendedMemoryAllocation = 1024;
-    private long memoryTextUpdateDelay = 500;
-    private boolean forceCrash = false;
-    private String crashInfo = "If you would like to play with a lower allocation, contact the pack maker to adjust the settings.";
+    public int recommendedMemoryAllocation;
+    public long memoryTextUpdateDelay;
+    public boolean forceCrash;
+    public String crashInfo;
+    
+    //DATA 
+    public DataGeneral generalData;
     
     //LISTENER FLAG
     public boolean isInMenu = true;
     public boolean shouldGameStart = true;
  
     //HELPERS
-    String threadName;
-    long maxMemory;
-    long totalMemory;
-    long freeMemory;
+    private String threadName;
+    private long maxMemory;
+    private long totalMemory;
+    private long freeMemory;
 
     public ThreadMain() {}
 
     @Override
     public void run() {
         setThreadName("MemoryTesterThread");
+        initialize();
+    }
+    
+    public void initialize() {
         updateMemoryStatistics();
-        configLoadData();
+        
+        generateDataInstances();      
+        generalData.configLoadData();
         
         if (recommendedMemoryAllocation > maxMemory && forceCrash) {inGuiForceCrashAction();}
         
@@ -62,6 +72,12 @@ public class ThreadMain extends Thread {
         maxMemory = Runtime.getRuntime().maxMemory() / 1000000;
         totalMemory = Runtime.getRuntime().totalMemory() / 1000000;
         freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
+    }
+    
+    private void generateDataInstances() {
+    	if(generalData == null) {
+    		generalData = new DataGeneral((ThreadMain) Thread.currentThread());
+    	}
     }
 
     private void inGuiMenuAction() {
@@ -90,7 +106,7 @@ public class ThreadMain extends Thread {
     }
     
     
-    private void inGuiErrorCrash(String errorLocation) {
+    public void inGuiErrorCrash(String errorLocation) {
     	if(guiErrorCrashInstance == null) {
     		guiErrorCrashInstance = new GuiErrorCrash((ThreadMain) Thread.currentThread());
     		guiErrorCrashInstance.frame.setVisible(true);
