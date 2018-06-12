@@ -22,14 +22,14 @@ public class ThreadMain extends Thread {
     private GuiForceCrash guiForceCrashInstance;
     private GuiErrorCrash guiErrorCrashInstance;
     
-    //CONFIG
+    //DATA OBJECTS
+    public DataGeneral generalData;
+      
+    //DATA VALUES
     public int recommendedMemoryAllocation;
     public long memoryTextUpdateDelay;
     public boolean forceCrash;
     public String crashInfo;
-    
-    //DATA 
-    public DataGeneral generalData;
     
     //LISTENER FLAG
     public boolean isInMenu = true;

@@ -16,16 +16,13 @@ public class MemoryTester {
     public static MemoryTester instance;
 
     @EventHandler
-    public static void preInit(FMLPreInitializationEvent event) {
-    }
+    public static void preInit(FMLPreInitializationEvent event) {}
 
     @EventHandler
-    public static void init(FMLInitializationEvent event) {
-    }
+    public static void init(FMLInitializationEvent event) {}
 
     @EventHandler
-    public static void postInit(FMLPostInitializationEvent event) {
-    }
+    public static void postInit(FMLPostInitializationEvent event) {}
 
 }
 
