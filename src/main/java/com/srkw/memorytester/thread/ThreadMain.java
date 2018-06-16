@@ -14,7 +14,61 @@ import com.srkw.memorytester.gui.GuiForceCrash;
 import com.srkw.memorytester.gui.GuiMain;
 import com.srkw.memorytester.gui.GuiMenu;
 
+<<<<<<< Updated upstream
 public class ThreadMain extends Thread {
+=======
+import java.io.*;
+
+	public ThreadMain() {	
+	}
+	
+	@Override
+	public void run() {
+		
+		Thread.currentThread().setName("MemoryTesterThread");
+		
+		parseData();
+		
+		if(Runtime.getRuntime().maxMemory() / 1000000 < maxMemoryRecommended && forceCrash) {
+			guiForceCrashInstance = new GuiForceCrash((ThreadMain) Thread.currentThread());
+			guiForceCrashInstance.frame.setVisible(true);
+			guiForceCrashInstance.crash.setText(
+					"The game was forced crashed because of insufficient memory."
+			);
+			guiForceCrashInstance.currentAllocation.setText(					
+					"Your current memory allocation is " + Runtime.getRuntime().maxMemory() / 1000000 + "MB."
+			);
+			guiForceCrashInstance.recommendedAllocation.setText(					
+					"Please allocate " + maxMemoryRecommended + "MB before running."
+			);
+			guiForceCrashInstance.crashInfo.setText(
+					"If you would like to play with a lower allocation, contact the pack maker to adjust the settings."
+			);
+			while(true) {try {Thread.currentThread().sleep(100);} catch (InterruptedException e) {}}
+		}
+		
+		guiMenuInstance = new GuiMenu((ThreadMain) Thread.currentThread());
+		guiMenuInstance.frame.setVisible(true);
+		
+		while(true) {
+			
+			if(isInMenu) {
+				holdPause();
+			} else {
+				if(guiMainInstance == null) {
+					guiMainInstance = new GuiMain((ThreadMain) Thread.currentThread());
+					guiMainInstance.frame.setVisible(true);
+				}
+				updateText();
+			}
+			
+			try {Thread.currentThread().sleep(memoryTextUpdateDelay);} catch (InterruptedException e) {}			
+		}
+		
+	}
+	
+	public void parseData() {
+>>>>>>> Stashed changes
 
 	//GUI
 	public GuiMenu guiMenuInstance;
