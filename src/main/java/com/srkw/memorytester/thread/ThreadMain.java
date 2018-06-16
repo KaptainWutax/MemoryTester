@@ -17,10 +17,10 @@ import com.srkw.memorytester.gui.GuiMenu;
 public class ThreadMain extends Thread {
 
 	//GUI
-    private GuiMenu guiMenuInstance;
-    private GuiMain guiMainInstance;
-    private GuiForceCrash guiForceCrashInstance;
-    private GuiErrorCrash guiErrorCrashInstance;
+	public GuiMenu guiMenuInstance;
+	public GuiMain guiMainInstance;
+	public GuiForceCrash guiForceCrashInstance;
+	public GuiErrorCrash guiErrorCrashInstance;
     
     //DATA OBJECTS
     public DataGeneral generalData;
@@ -30,8 +30,10 @@ public class ThreadMain extends Thread {
     public long memoryTextUpdateDelay;
     public boolean forceCrash;
     public String crashInfo;
+    public String redirectCrashLink;
     
     //LISTENER FLAG
+    public boolean hasGameInitialized = false;
     public boolean isInMenu = true;
     public boolean shouldGameStart = true;
  
@@ -56,9 +58,13 @@ public class ThreadMain extends Thread {
         generalData.configLoadData();
         
         if (recommendedMemoryAllocation > maxMemory && forceCrash) {inGuiForceCrashAction();}
+
         
-        while (true) {  
-            if (isInMenu) {inGuiMenuAction();} else {inGuiMainAction();}
+        while (true) { 
+            if (isInMenu) {inGuiMenuAction();} else {
+                while(!hasGameInitialized) {performSleep(100000000);}
+            	inGuiMainAction();
+            	}
             performSleep(memoryTextUpdateDelay);
         }
     }
@@ -96,7 +102,7 @@ public class ThreadMain extends Thread {
         updateGuiMain();
     }
 
-    private void inGuiForceCrashAction() {   	
+    public void inGuiForceCrashAction() {   	
     	if(guiForceCrashInstance == null) {
     		guiForceCrashInstance = new GuiForceCrash((ThreadMain) Thread.currentThread());
     		guiForceCrashInstance.frame.setVisible(true);
@@ -118,71 +124,6 @@ public class ThreadMain extends Thread {
     private void performSleep(long millis) {
         try {Thread.currentThread().sleep(millis);} 
         catch (InterruptedException e) {;}
-    }
-    
-    private void configLoadData() {
-    	
-        FileReader input = null;
-        BufferedWriter writer = null;
-        
-        try {input = new FileReader("config/MemoryTester/general.txt");} 
-        catch (FileNotFoundException e) {     	
-            try {
-            	File dir = new File("config/MemoryTester");
-            	dir.mkdir();
-                writer = new BufferedWriter(new FileWriter("config/MemoryTester/general.txt"));
-                writer.write(
-                		"RecommendedMemoryAllocation=" + recommendedMemoryAllocation + "\n"
-                        + "MemoryTextUpdateDelay=" + memoryTextUpdateDelay + "\n"
-                        + "ForceCrash=" + forceCrash + "\n"
-                        + "CrashInfo=" + crashInfo + "\n"
-                );
-                writer.flush();
-                writer.close();
-                input = new FileReader("config/MemoryTester/general.txt");
-            } catch (IOException e2) {inGuiErrorCrash("Unexpected error in " + "config/MemoryTester/general.txt");}
-
-        }
-        
-        try {configParseData(input);} catch (IOException e) {inGuiErrorCrash("ForceCrash entry in " + "config/MemoryTester/general.txt");}
-
-    }
-    
-    private void configParseData(FileReader input) throws IOException {
-    	
-    	BufferedReader bufRead = new BufferedReader(input);
-
-        String myLine = bufRead.readLine();
-        String[] data = myLine.split("=");
-        Boolean illegalArgument = false;
-
-            if (data[0].trim().contains("RecommendedMemoryAllocation")) {
-            	recommendedMemoryAllocation = Integer.parseInt(data[1].trim());
-            } else {inGuiErrorCrash("RecommendedMemoryAllocation entry in " + "config/MemoryTester/general.txt");}
-
-        myLine = bufRead.readLine();
-        data = myLine.split("=");
-
-            if (data[0].trim().contains("MemoryTextUpdateDelay")) {
-                memoryTextUpdateDelay = Integer.parseInt(data[1].trim());
-            } else {inGuiErrorCrash("MemoryTextUpdateDelay entry in " + "config/MemoryTester/general.txt");}
-
-        myLine = bufRead.readLine();
-        data = myLine.split("=");
-
-            if (data[0].trim().contains("ForceCrash")) {
-            	forceCrash = Boolean.parseBoolean(data[1].trim());
-            } else {inGuiErrorCrash("ForceCrash entry in " + "config/MemoryTester/general.txt");}
-        
-        myLine = bufRead.readLine();
-        data = myLine.split("=");
-
-            if (data[0].trim().contains("CrashInfo")) {
-                crashInfo = data[1].trim();
-            } else {inGuiErrorCrash("CrashInfo entry in " + "config/MemoryTester/general.txt");}
-
-        bufRead.close();
-        
     }
 
     private void updateGuiMenu() {
@@ -251,11 +192,11 @@ public class ThreadMain extends Thread {
             );
         } else if (guiMainInstance.memorySpikesCount == 1) {
             guiMainInstance.memorySpikesText.setText(
-                    "1 memory spike was recorded. This is not good."
+                    "1 memory spike was recorded."
             );
         } else {
             guiMainInstance.memorySpikesText.setText(
-                    guiMainInstance.memorySpikesCount + " memory spikes were recorded. This is not good."
+                    guiMainInstance.memorySpikesCount + " memory spikes were recorded."
             );
         }
 

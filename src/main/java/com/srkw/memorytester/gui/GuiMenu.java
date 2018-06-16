@@ -1,6 +1,9 @@
 package com.srkw.memorytester.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,6 +13,7 @@ import java.awt.event.WindowListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import com.srkw.memorytester.thread.ThreadMain;
@@ -71,7 +75,6 @@ public class GuiMenu extends JFrame {
 
         });
 
-        //TEXT
         int textWidth = 1000;
         int textCenterX = frame.getWidth() / 2 - textWidth / 2;
         int textOffsetX = 0;
@@ -92,7 +95,6 @@ public class GuiMenu extends JFrame {
         memoryAllocatedRecommendedText.setBounds(textCenterX + textOffsetX, textCenterY + textOffsetY + 40, textWidth, textHeight);
         frame.getContentPane().add(memoryAllocatedRecommendedText);
 
-        //BUTTON
         int buttonWidth = 500;
         int buttonCenterX = frame.getWidth() / 2 - buttonWidth / 2;
         int buttonOffsetX = 0;
@@ -155,7 +157,7 @@ public class GuiMenu extends JFrame {
             @Override
             public void mouseReleased(MouseEvent arg0) {}
 
-        });
+        });          
 
     }
 

@@ -15,17 +15,19 @@ public class DataGeneral {
 	private ThreadMain threadInstance;
 	
 	//DEFAULT VALUES
-	private int defaultRecommendedMemoryAllocation = 1024;
-	private long defaultMemoryTextUpdateDelay = 500;
-	private boolean defaultForceCrash = false;
-	private String defaultCrashInfo = "If you would like to play with a lower allocation, contact the pack maker to adjust the settings.";
+	private final int defaultRecommendedMemoryAllocation = 1024;
+	private final long defaultMemoryTextUpdateDelay = 500;
+	private final boolean defaultForceCrash = false;
+	private final String defaultCrashInfo = "If you would like to play with a lower allocation, contact the pack maker to adjust the settings.";
+	private final String defaultredirectCrashLink = "null";
 	
 	//DYNAMIC VALUES
 	private int recommendedMemoryAllocation = 1024;
 	private long memoryTextUpdateDelay = 500;
 	private boolean forceCrash = false;
 	private String crashInfo = "If you would like to play with a lower allocation, contact the pack maker to adjust the settings.";
-	    
+	private String redirectCrashLink = "null";
+	
 	public DataGeneral(ThreadMain threadInstance) {
 		this.threadInstance = threadInstance;
 	}
@@ -46,6 +48,7 @@ public class DataGeneral {
                         + "MemoryTextUpdateDelay=" + memoryTextUpdateDelay + "\n"
                         + "ForceCrash=" + forceCrash + "\n"
                         + "CrashInfo=" + crashInfo + "\n"
+                        + "RedirectCrashLink=" + redirectCrashLink + "\n"
                 );
                 writer.flush();
                 writer.close();
@@ -54,44 +57,47 @@ public class DataGeneral {
 
         }
         
-        try {configParseData(input);} catch (IOException e) {threadInstance.inGuiErrorCrash("ForceCrash entry in " + "config/MemoryTester/general.txt");}
+        configParseData(input);
 
     }
     
-    private void configParseData(FileReader input) throws IOException {
+    private void configParseData(FileReader input) {
     	
     	BufferedReader bufRead = new BufferedReader(input);
-
-        String myLine = bufRead.readLine();
-        String[] data = myLine.split("=");
         Boolean illegalArgument = false;
+        String[] data = null;
+        
+        try {String myLine = bufRead.readLine(); data = myLine.split("=");} catch (Exception e) {threadInstance.inGuiErrorCrash("RecommendedMemoryAllocation entry in " + "config/MemoryTester/general.txt");}
 
             if (data[0].trim().contains("RecommendedMemoryAllocation")) {
             	recommendedMemoryAllocation = Integer.parseInt(data[1].trim());
             } else {threadInstance.inGuiErrorCrash("RecommendedMemoryAllocation entry in " + "config/MemoryTester/general.txt");}
 
-        myLine = bufRead.readLine();
-        data = myLine.split("=");
+        try {String myLine = bufRead.readLine(); data = myLine.split("=");} catch (Exception e) {threadInstance.inGuiErrorCrash("MemoryTextUpdateDelay entry in " + "config/MemoryTester/general.txt");}
 
             if (data[0].trim().contains("MemoryTextUpdateDelay")) {
                 memoryTextUpdateDelay = Integer.parseInt(data[1].trim());
             } else {threadInstance.inGuiErrorCrash("MemoryTextUpdateDelay entry in " + "config/MemoryTester/general.txt");}
 
-        myLine = bufRead.readLine();
-        data = myLine.split("=");
+        try {String myLine = bufRead.readLine(); data = myLine.split("=");} catch (Exception e) {threadInstance.inGuiErrorCrash("ForceCrash entry in " + "config/MemoryTester/general.txt");}
 
             if (data[0].trim().contains("ForceCrash")) {
             	forceCrash = Boolean.parseBoolean(data[1].trim());
             } else {threadInstance.inGuiErrorCrash("ForceCrash entry in " + "config/MemoryTester/general.txt");}
         
-        myLine = bufRead.readLine();
-        data = myLine.split("=");
+        try {String myLine = bufRead.readLine(); data = myLine.split("=");} catch (Exception e) {threadInstance.inGuiErrorCrash("CrashInfo entry in " + "config/MemoryTester/general.txt");}
 
             if (data[0].trim().contains("CrashInfo")) {
                 crashInfo = data[1].trim();
             } else {threadInstance.inGuiErrorCrash("CrashInfo entry in " + "config/MemoryTester/general.txt");}
-
-        bufRead.close();
+           
+	    try {String myLine = bufRead.readLine(); data = myLine.split("=");} catch (Exception e) {threadInstance.inGuiErrorCrash("RedirectCrashLink entry in " + "config/MemoryTester/general.txt");}
+	    
+            if (data[0].trim().contains("RedirectCrashLink")) {
+            	redirectCrashLink = data[1].trim();
+            } else {threadInstance.inGuiErrorCrash("RedirectCrashLink entry in " + "config/MemoryTester/general.txt");}
+        
+        try {bufRead.close();} catch (IOException e) {threadInstance.inGuiErrorCrash("Unexpected error while accessing the data, any other program accessing the directory?");}
         setParsedDataToThread();
         
     }
@@ -101,6 +107,7 @@ public class DataGeneral {
     	threadInstance.memoryTextUpdateDelay = this.memoryTextUpdateDelay;
     	threadInstance.forceCrash = this.forceCrash;
     	threadInstance.crashInfo = this.crashInfo;
+    	threadInstance.redirectCrashLink = this.redirectCrashLink;
     }
     
     public void setDefaultDataToThread() {
@@ -108,15 +115,15 @@ public class DataGeneral {
     	memoryTextUpdateDelay = this.defaultMemoryTextUpdateDelay;
     	forceCrash = this.defaultForceCrash;
     	crashInfo = this.defaultCrashInfo;
+    	redirectCrashLink = this.defaultredirectCrashLink;
     	
-    	if(resetFile()) {  	
-    		threadInstance.stop();
-    		threadInstance = new ThreadMain();
-    		threadInstance.start();
-    	}
+    	resetFile(); 	
+    	threadInstance.stop();
+    	threadInstance = new ThreadMain();
+    	threadInstance.start();
     }
     
-    public boolean resetFile() {
+    public void resetFile() {
     	try {
     		BufferedWriter writer = null;
         	File dir = new File("config/MemoryTester");
@@ -127,14 +134,13 @@ public class DataGeneral {
                     + "MemoryTextUpdateDelay=" + memoryTextUpdateDelay + "\n"
                     + "ForceCrash=" + forceCrash + "\n"
                     + "CrashInfo=" + crashInfo + "\n"
+                    + "RedirectCrashLink=" + redirectCrashLink + "\n"
             );
             writer.flush();
             writer.close();
         } catch (IOException e2) {
         	threadInstance.inGuiErrorCrash("Unexpected error while resetting, please delete the whole directory.");
-        	return false;
         }
-    	return true;
     }
 
 }

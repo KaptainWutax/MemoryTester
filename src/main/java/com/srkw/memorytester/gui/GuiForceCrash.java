@@ -1,10 +1,15 @@
 package com.srkw.memorytester.gui;
 
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.net.URI;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -95,6 +100,46 @@ public class GuiForceCrash extends JFrame {
         crashInfo.setHorizontalAlignment(SwingConstants.CENTER);
         crashInfo.setBounds(textCenterX + textOffsetX, textCenterY + textOffsetY + 140, textWidth, textHeight);
         frame.getContentPane().add(crashInfo);
+        
+        int buttonWidth = 500;
+        int buttonCenterX = frame.getWidth() / 2 - buttonWidth / 2;
+        int buttonOffsetX = 0;
+
+        int buttonHeight = 40;
+
+    	if(threadInstance.redirectCrashLink.equals("null")) {return;}
+    	
+        JButton redirectButton = new JButton("Redirect");
+        redirectButton.setEnabled(true);
+        redirectButton.setBounds(buttonCenterX + buttonOffsetX, textCenterY + textOffsetY + 200, buttonWidth, buttonHeight);
+        frame.getContentPane().add(redirectButton);
+        
+        redirectButton.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent arg0) {
+            	Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                    try {desktop.browse(new URI(threadInstance.redirectCrashLink));} catch (Exception e) {;}
+                    frame.setEnabled(false);
+                    frame.setVisible(false);          
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent arg0) {}
+
+            @Override
+            public void mouseExited(MouseEvent arg0) {}
+
+            @Override
+            public void mousePressed(MouseEvent arg0) {}
+
+            @Override
+            public void mouseReleased(MouseEvent arg0) {}
+
+        });
+
 
     }
 

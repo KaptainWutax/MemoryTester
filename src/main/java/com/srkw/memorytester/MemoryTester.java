@@ -1,5 +1,6 @@
 package com.srkw.memorytester;
 
+import com.srkw.memorytester.utility.PluginLoader;
 import com.srkw.memorytester.utility.Reference;
 
 import net.minecraftforge.fml.common.Mod;
@@ -22,7 +23,10 @@ public class MemoryTester {
     public static void init(FMLInitializationEvent event) {}
 
     @EventHandler
-    public static void postInit(FMLPostInitializationEvent event) {}
+    public static void postInit(FMLPostInitializationEvent event) {
+    	PluginLoader.thread.hasGameInitialized = true;
+    	PluginLoader.thread.interrupt();
+    }
 
 }
 

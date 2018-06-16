@@ -67,7 +67,7 @@ public class GuiMain extends JFrame {
         frame = new JFrame();
         frame.setBounds(0, 0, Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
         frame.setTitle("Memory Tester");
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
         int textWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -107,6 +107,7 @@ public class GuiMain extends JFrame {
         totalTimeText.setHorizontalAlignment(SwingConstants.CENTER);
         totalTimeText.setBounds(textCenterX + textOffsetX, textCenterY + textOffsetY + 160, textWidth, textHeight);
         frame.getContentPane().add(totalTimeText);
+        
     }
 
 }

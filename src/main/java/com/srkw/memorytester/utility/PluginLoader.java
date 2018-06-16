@@ -15,9 +15,10 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 @IFMLLoadingPlugin.TransformerExclusions("com.srkw.memorytester.")
 public class PluginLoader implements IFMLLoadingPlugin {
 
+	public static ThreadMain thread = new ThreadMain();
+	
     public PluginLoader() {
-
-        ThreadMain thread = new ThreadMain();
+    	
         thread.start();
 
         while (thread.isInMenu) {
