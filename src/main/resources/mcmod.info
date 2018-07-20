@@ -2,15 +2,14 @@
 {
   "modid": "memorytester",
   "name": "MemoryTester",
-  "description": "A mod which gives the pack makers ability to set an minimum RAM.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
-  "authorList": [
-    "KaptainWutax,StrikerRocker"
-  ],
-  "credits": "Thanks to kreezxil for giving this idea and thanks to forge devs",
+  "description": "MemoryTester collects data about your Minecraft memory usage to help you determine the perfect amount to use. 
+  It shows real time memory usage, average memory usage and the amount of spikes during a certain amount of time.",
+  "version": "0.3",
+  "mcversion": "1.12.2",
+  "url": "https://github.com/KaptainWutax/MemoryTester",
+  "updateUrl": "https://minecraft.curseforge.com/projects/memorytester",
+  "authorList": ["KaptainWutax"],
+  "credits": "Special thanks to Kreezxil for putting the idea forward.",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

@@ -10,7 +10,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'java'
 
-version = "0.2"
+version = "0.3"
 group = "com.srkw.memorytester"
 archivesBaseName = "MemoryTester"
 

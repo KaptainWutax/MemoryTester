@@ -1,34 +1,31 @@
-package com.srkw.memorytester.gui;
+package kaptainwutax.memorytester.gui;
 
-import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.net.URI;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import com.srkw.memorytester.thread.ThreadMain;
+import kaptainwutax.memorytester.data.IDataHandler;
+import kaptainwutax.memorytester.thread.ThreadMain;
 
-public class GuiForceCrash extends JFrame {
-
-    private ThreadMain threadInstance;
+public class GuiErrorCrash {
+	
+	private ThreadMain threadInstance;
     
     public JFrame frame;
     
     public JLabel crash;
-    public JLabel currentAllocation;
-    public JLabel recommendedAllocation;
     public JLabel crashInfo;
 
 
-    public GuiForceCrash(ThreadMain threadInstance) {
+    public GuiErrorCrash(ThreadMain threadInstance) {
         this.threadInstance = threadInstance;
         initialize();
     }
@@ -43,7 +40,8 @@ public class GuiForceCrash extends JFrame {
         frame.addWindowListener(new WindowListener() {
 
             @Override
-            public void windowActivated(WindowEvent arg0) {}
+            public void windowActivated(WindowEvent arg0) {
+            }
 
             @Override
             public void windowClosed(WindowEvent arg0) {
@@ -53,19 +51,24 @@ public class GuiForceCrash extends JFrame {
             }
 
             @Override
-            public void windowClosing(WindowEvent arg0) {}
+            public void windowClosing(WindowEvent arg0) {
+            }
 
             @Override
-            public void windowDeactivated(WindowEvent arg0) {}
+            public void windowDeactivated(WindowEvent arg0) {
+            }
 
             @Override
-            public void windowDeiconified(WindowEvent arg0) {}
+            public void windowDeiconified(WindowEvent arg0) {
+            }
 
             @Override
-            public void windowIconified(WindowEvent arg0) {}
+            public void windowIconified(WindowEvent arg0) {
+            }
 
             @Override
-            public void windowOpened(WindowEvent arg0) {}
+            public void windowOpened(WindowEvent arg0) {
+            }
 
         });
 
@@ -83,22 +86,10 @@ public class GuiForceCrash extends JFrame {
         crash.setBounds(textCenterX + textOffsetX, textCenterY + textOffsetY, textWidth, textHeight);
         frame.getContentPane().add(crash);
 
-        currentAllocation = new JLabel("loading...");
-        currentAllocation.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 30));
-        currentAllocation.setHorizontalAlignment(SwingConstants.CENTER);
-        currentAllocation.setBounds(textCenterX + textOffsetX, textCenterY + textOffsetY + 40, textWidth, textHeight);
-        frame.getContentPane().add(currentAllocation);
-
-        recommendedAllocation = new JLabel("loading...");
-        recommendedAllocation.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 30));
-        recommendedAllocation.setHorizontalAlignment(SwingConstants.CENTER);
-        recommendedAllocation.setBounds(textCenterX + textOffsetX, textCenterY + textOffsetY + 80, textWidth, textHeight);
-        frame.getContentPane().add(recommendedAllocation);
-
         crashInfo = new JLabel("loading...");
         crashInfo.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 30));
         crashInfo.setHorizontalAlignment(SwingConstants.CENTER);
-        crashInfo.setBounds(textCenterX + textOffsetX, textCenterY + textOffsetY + 140, textWidth, textHeight);
+        crashInfo.setBounds(textCenterX + textOffsetX, textCenterY + textOffsetY + 60, textWidth, textHeight);
         frame.getContentPane().add(crashInfo);
         
         int buttonWidth = 500;
@@ -106,24 +97,52 @@ public class GuiForceCrash extends JFrame {
         int buttonOffsetX = 0;
 
         int buttonHeight = 40;
+        int buttonCenterY = frame.getHeight() / 2 - buttonHeight / 2;
+        int buttonOffsetY = -250;
 
-    	if(threadInstance.redirectCrashLink.equals("null")) {return;}
-    	
-        JButton redirectButton = new JButton("Redirect");
-        redirectButton.setEnabled(true);
-        redirectButton.setBounds(buttonCenterX + buttonOffsetX, textCenterY + textOffsetY + 200, buttonWidth, buttonHeight);
-        frame.getContentPane().add(redirectButton);
+        JButton resetButton = new JButton("Reset Config");
+        resetButton.setEnabled(true);
+        resetButton.setBounds(buttonCenterX + buttonOffsetX, buttonCenterY + buttonOffsetY, buttonWidth, buttonHeight);
+        frame.getContentPane().add(resetButton);
         
-        redirectButton.addMouseListener(new MouseListener() {
+        resetButton.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				for(IDataHandler dataObj : threadInstance.data) {
+					dataObj.setDefaultDataToThread();
+				}
+				threadInstance.shouldGameStart = false;
+                frame.setEnabled(false);
+                frame.setVisible(false);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {}
+			
+        });
+
+        JButton quitButton = new JButton("Quit");
+        quitButton.setEnabled(true);
+        quitButton.setBounds(buttonCenterX + buttonOffsetX, buttonCenterY + buttonOffsetY + 50, buttonWidth, buttonHeight);
+        frame.getContentPane().add(quitButton);
+        
+        quitButton.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseClicked(MouseEvent arg0) {
-            	Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-                    try {desktop.browse(new URI(threadInstance.redirectCrashLink));} catch (Exception e) {;}
-                    frame.setEnabled(false);
-                    frame.setVisible(false);          
-                }
+                threadInstance.shouldGameStart = false;
+                frame.setEnabled(false);
+                frame.setVisible(false);
             }
 
             @Override
@@ -139,8 +158,6 @@ public class GuiForceCrash extends JFrame {
             public void mouseReleased(MouseEvent arg0) {}
 
         });
-
-
+        
     }
-
 }
