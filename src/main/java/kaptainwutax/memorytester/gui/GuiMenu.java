@@ -22,6 +22,10 @@ public class GuiMenu extends JFrame {
 
     public JLabel memoryAllocatedText;
     public JLabel memoryAllocatedRecommendedText;
+    
+    public JButton startButton;
+    public JButton quitButton;
+    public JButton debugButton;
 
     public GuiMenu(ThreadMain threadInstance) {
         this.threadInstance = threadInstance;
@@ -100,20 +104,51 @@ public class GuiMenu extends JFrame {
         int buttonCenterY = frame.getHeight() / 2 - buttonHeight / 2;
         int buttonOffsetY = -250 + 250;
 
-        JButton startButton = new JButton("Start");
+        startButton = new JButton("loading...");
         startButton.setEnabled(true);
         startButton.setBounds(buttonCenterX + buttonOffsetX, buttonCenterY + buttonOffsetY, buttonWidth, buttonHeight);
         frame.getContentPane().add(startButton);
 
-        JButton quitButton = new JButton("Quit");
+        quitButton = new JButton("loading...");
         quitButton.setEnabled(true);
         quitButton.setBounds(buttonCenterX + buttonOffsetX, buttonCenterY + buttonOffsetY + 50, buttonWidth, buttonHeight);
         frame.getContentPane().add(quitButton);
+        
+        if(threadInstance.useStatisticsGui) {
+	        debugButton = new JButton("loading...");
+	        debugButton.setEnabled(true);
+	        debugButton.setBounds(buttonCenterX + buttonOffsetX, buttonCenterY + buttonOffsetY + 150, buttonWidth, buttonHeight);
+	        frame.getContentPane().add(debugButton);
+	        	        
+	        debugButton.addMouseListener(new MouseListener() {
+
+	            @Override
+	            public void mouseClicked(MouseEvent arg0) { 
+	                threadInstance.isInMenu = false;
+	                frame.setEnabled(false);
+	                frame.setVisible(false);
+	            }
+
+	            @Override
+	            public void mouseEntered(MouseEvent arg0) {}
+
+	            @Override
+	            public void mouseExited(MouseEvent arg0) {}
+
+	            @Override
+	            public void mousePressed(MouseEvent arg0) {}
+
+	            @Override
+	            public void mouseReleased(MouseEvent arg0) {}
+
+	        });
+        }
 
         startButton.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseClicked(MouseEvent arg0) {
+            	threadInstance.useStatisticsGui = false;
                 threadInstance.isInMenu = false;
                 frame.setEnabled(false);
                 frame.setVisible(false);
@@ -154,7 +189,7 @@ public class GuiMenu extends JFrame {
             @Override
             public void mouseReleased(MouseEvent arg0) {}
 
-        });          
+        });
 
     }
 

@@ -12,7 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import kaptainwutax.memorytester.data.IDataHandler;
+import kaptainwutax.memorytester.data.DataConfig;
+import kaptainwutax.memorytester.init.InitData;
 import kaptainwutax.memorytester.thread.ThreadMain;
 
 public class GuiErrorCrash {
@@ -109,8 +110,9 @@ public class GuiErrorCrash {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				for(IDataHandler dataObj : threadInstance.data) {
-					dataObj.setDefaultDataToThread();
+				for(DataConfig config : InitData.configs) {
+					config.setDefaultDataToThread();
+					config.resetFile();
 				}
 				threadInstance.shouldGameStart = false;
                 frame.setEnabled(false);

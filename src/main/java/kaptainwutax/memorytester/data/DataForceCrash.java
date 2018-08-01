@@ -1,115 +1,49 @@
 package kaptainwutax.memorytester.data;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import kaptainwutax.memorytester.thread.ThreadMain;
 
-public class DataForceCrash implements IDataHandler {
-
-	private ThreadMain threadInstance;
+public class DataForceCrash extends DataConfig {
 	
-	//DEFAULT VALUES
-	private final String defaultInfo = "If you would like to play with a lower allocation, contact the pack maker to adjust the settings.";
-	private final String defaultRedirectLink = "null";
+	public static String directory = "config/MemoryTester/";
+	public static String location = "ForceCrash.txt";
 	
-	//NAMES 
-	private final String nameInfo = "Info";
-	private final String nameRedirectLink = "RedirectLink";
-	
-	//DYNAMIC VALUES
-	private String info = defaultInfo;
-	private String redirectLink = defaultRedirectLink;
-	
-	//CONFIG
-	public String directory = "config/MemoryTester";
-	public String location = "config/MemoryTester/forceCrash.txt";
-	public String defaultConfig = nameInfo + "=" + defaultInfo + "\n"
-								+ nameRedirectLink + "=" + redirectLink + "\n";
+	private DataUnit crashInfoHeader;
+	private DataUnit crashInfoline1;
+	private DataUnit crashInfoLine2;
+	private DataUnit crashInfoFooter;
+	private DataUnit crashRedirectLink;
 	
 	public DataForceCrash(ThreadMain threadInstance) {
-		this.threadInstance = threadInstance;
+		super(threadInstance, directory, location);
 	}
 	
 	@Override
-	public void configLoadData() {
-    	
-        FileReader reader = null;
-        BufferedWriter writer = null;
-        
-        try {reader = new FileReader(location);} 
-        catch (FileNotFoundException e) {     	
-            try {
-            	File dir = new File(directory);
-            	dir.mkdir();
-                writer = new BufferedWriter(new FileWriter(location));
-                writer.write(defaultConfig);
-                writer.flush();
-                writer.close();
-                reader = new FileReader(location);
-            } catch (IOException e2) {threadInstance.inGuiErrorCrash("Unexpected and unknown error in " + location);}
-
-        }
-        
-        configParseData(reader);
-
-    }
-    
-    private void configParseData(FileReader input) {
-    	
-    	BufferedReader bufReader = new BufferedReader(input);
-        Boolean illegalArgument = false;
-        String[] data = null;
-        
-        try {String myLine = bufReader.readLine(); data = myLine.split("=");} catch (Exception e) {threadInstance.inGuiErrorCrash(nameInfo + "entry in " + location);}
-
-            if (data[0].trim().contains(nameInfo)) {
-            	info = data[1].trim();
-            } else {threadInstance.inGuiErrorCrash(nameInfo + " entry in " + location);}
-            
-        try {String myLine = bufReader.readLine(); data = myLine.split("=");} catch (Exception e) {threadInstance.inGuiErrorCrash(nameRedirectLink + "entry in " + location);}
-
-        	if (data[0].trim().contains(nameRedirectLink)) {
-        		redirectLink = data[1].trim();
-        	} else {threadInstance.inGuiErrorCrash(nameRedirectLink + " entry in " + location);}
-        
-        try {bufReader.close();} catch (IOException e) {threadInstance.inGuiErrorCrash("Unexpected error while accessing the data, any other program using the directory?");}
-        setParsedDataToThread();
-        
-    }
-    
-    @Override
-    public void setParsedDataToThread() {
-    	threadInstance.info = this.info;
-    	threadInstance.redirectLink = this.redirectLink;
-    }
-    
-    @Override
-    public void setDefaultDataToThread() {
-    	info = this.defaultInfo;
-    	redirectLink = this.defaultRedirectLink;	
-    	resetFile(); 	
-    	setParsedDataToThread();
-    }
-    
-    @Override
-    public void resetFile() {
-    	try {
-    		BufferedWriter writer = null;
-        	File dir = new File(directory);
-        	dir.mkdir();
-            writer = new BufferedWriter(new FileWriter(location));
-            writer.write(defaultConfig);
-            writer.flush();
-            writer.close();
-        } catch (IOException e2) {
-        	threadInstance.inGuiErrorCrash("Unexpected error while resetting, please delete the whole directory.");
-        }
-    }
-
+	public void populateFields() {
+		this.crashInfoHeader = new DataUnit("InfoHeader", "string", "The game was force crashed because of an insufficient memory allocation.");
+		this.crashInfoline1 = new DataUnit("InfoLine1", "string", "Your current memory allocation is [AllocatedMemory]MB.");
+		this.crashInfoLine2 = new DataUnit("InfoLine2", "string", "Please allocate [RecommendedMemory]MB before running.");
+		this.crashInfoFooter = new DataUnit("InfoFooter", "string", "If you would like to play with a lower allocation, contact the pack maker to adjust the settings.");
+		this.crashRedirectLink = new DataUnit("RedirectLink", "string", "null");
+		super.populateFields();
+	}
+	
+	@Override
+	public void populateConfig() {
+		this.addEntry(crashInfoHeader);
+		this.addEntry(crashInfoline1);
+		this.addEntry(crashInfoLine2);
+		this.addEntry(this.crashInfoFooter);
+		this.addEntry(this.crashRedirectLink);
+		super.populateConfig();
+	}
+	
+	@Override
+	public void updateThread() {
+		threadInstance.crashInfoHeader = this.crashInfoHeader.getValue().toString();
+		threadInstance.crashInfoLine1 = this.crashInfoline1.getValue().toString();
+		threadInstance.crashInfoLine2 = this.crashInfoLine2.getValue().toString();
+		threadInstance.crashInfoFooter = this.crashInfoFooter.getValue().toString();
+		threadInstance.crashRedirectLink = this.crashRedirectLink.getValue().toString();
+	}
+	
 }

@@ -10,8 +10,8 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'java'
 
-version = "0.3"
-group = "com.srkw.memorytester"
+version = "0.3.2"
+group = "kaptainwutax.memorytester"
 archivesBaseName = "MemoryTester"
 
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
@@ -26,7 +26,7 @@ minecraft {
     makeObfSourceJar false
     
     def args = [
-            "-Dfml.coreMods.load=com.srkw.memorytester.utility.PluginLoader"
+            "-Dfml.coreMods.load=kaptainwutax.memorytester.utility.PluginLoader"
     ]
     
     clientJvmArgs.addAll(args)
@@ -55,7 +55,7 @@ processResources {
 
 jar {
     manifest.attributes(
-            "FMLCorePlugin": "com.srkw.memorytester.utility.PluginLoader",
+            "FMLCorePlugin": "kaptainwutax.memorytester.utility.PluginLoader",
             "ModSide": "CLIENT"
     )
 }

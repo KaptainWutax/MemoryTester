@@ -2,25 +2,21 @@ package kaptainwutax.memorytester.thread;
 
 import java.util.ArrayList;
 
-import kaptainwutax.memorytester.data.DataForceCrash;
-import kaptainwutax.memorytester.data.DataGeneral;
-import kaptainwutax.memorytester.data.DataStatistics;
-import kaptainwutax.memorytester.data.IDataHandler;
 import kaptainwutax.memorytester.gui.GuiErrorCrash;
 import kaptainwutax.memorytester.gui.GuiForceCrash;
 import kaptainwutax.memorytester.gui.GuiMain;
 import kaptainwutax.memorytester.gui.GuiMenu;
+import kaptainwutax.memorytester.init.InitData;
 
 public class ThreadMain extends Thread {
 
+	public int test;
+	
 	//GUI
 	public GuiMenu guiMenuInstance;
 	public GuiMain guiMainInstance;
 	public GuiForceCrash guiForceCrashInstance;
 	public GuiErrorCrash guiErrorCrashInstance;
-    
-    //DATA OBJECTS
-    public ArrayList<IDataHandler> data = new ArrayList<IDataHandler>();
       
     //DATA VALUES
     //DataGeneral
@@ -28,11 +24,23 @@ public class ThreadMain extends Thread {
     public boolean useMenuGui;
     public boolean useStatisticsGui;
     public boolean useForceCrashGui;
+    //DataMenu
+    public String menuHeader;
+    public String menuLine1WhenOptimalMemory;
+    public String menuLine1WhenNonoptimalMemory;
+    public String menuButtonStartText;
+    public String menuButtonQuitText;
+    public String menuButtonStartDebugText;
     //DataStatistics
     public long memoryUsageUpdateDelay;
     //DataForceCrash
-    public String info;
-    public String redirectLink;
+    public String crashInfoHeader;
+    public String crashInfoLine1;
+    public String crashInfoLine2;
+    public String crashInfoFooter;
+    public String crashRedirectLink;
+    //DataErrorCrash
+    public String errorInfo;
     
     //LISTENER FLAG
     public boolean hasGameInitialized = false;
@@ -56,7 +64,7 @@ public class ThreadMain extends Thread {
     public void initialize() {
         updateMemoryStatistics();
         
-        generateDataInstances();      
+        InitData.initializeConfigs();  
         
         if (recommendedMemoryAllocation > maxMemory && useForceCrashGui) {inGuiForceCrashAction();}
         
@@ -66,10 +74,10 @@ public class ThreadMain extends Thread {
             } else {
             	isInMenu = false;
             	if(!useStatisticsGui) {
-            		Thread.currentThread().stop();
+            		return;
             	}
                 while(!hasGameInitialized) {
-                	performSleep(100000000);
+                	performSleep(Long.MAX_VALUE);
                 }
             	inGuiMainAction();
             }
@@ -88,15 +96,6 @@ public class ThreadMain extends Thread {
         freeMemory = Runtime.getRuntime().freeMemory() / 1000000;
     }
     
-    private void generateDataInstances() {
-    	data.add(new DataGeneral((ThreadMain) Thread.currentThread()));
-    	data.add(new DataStatistics((ThreadMain) Thread.currentThread()));
-    	data.add(new DataForceCrash((ThreadMain) Thread.currentThread()));
-    	for(IDataHandler dataObj : data) {
-    		dataObj.configLoadData();
-    	}
-    }
-
     private void inGuiMenuAction() {
     	if (guiMenuInstance == null) {
             guiMenuInstance = new GuiMenu((ThreadMain) Thread.currentThread());
@@ -142,18 +141,22 @@ public class ThreadMain extends Thread {
         updateMemoryStatistics();
         
         guiMenuInstance.memoryAllocatedText.setText(
-                "You have " + maxMemory + "MB of memory allocated."
+                applyString(menuHeader)
         );
 
         if (recommendedMemoryAllocation > maxMemory) {
             guiMenuInstance.memoryAllocatedRecommendedText.setText(
-                    "The pack recommends " + recommendedMemoryAllocation + "MB to run." + " Consider using " + (recommendedMemoryAllocation - maxMemory) + " more."
+            		applyString(menuLine1WhenNonoptimalMemory)
             );
         } else {
             guiMenuInstance.memoryAllocatedRecommendedText.setText(
-                    "The pack recommends " + recommendedMemoryAllocation + "MB to run."
+                    applyString(menuLine1WhenOptimalMemory)
             );
         }
+        
+        if(guiMenuInstance.startButton != null) {guiMenuInstance.startButton.setText(applyString(menuButtonStartText));}
+        if(guiMenuInstance.quitButton != null) {guiMenuInstance.quitButton.setText(applyString(menuButtonQuitText));}
+        if(guiMenuInstance.debugButton != null) {guiMenuInstance.debugButton.setText(applyString(menuButtonStartDebugText));}
 
     }
 
@@ -199,7 +202,7 @@ public class ThreadMain extends Thread {
 
         if (guiMainInstance.memorySpikesCount == 0) {
             guiMainInstance.memorySpikesText.setText(
-                    "No memory spikes were recorded. Minecraft is running smoothly."
+                    "No memory spikes were recorded."
             );
         } else if (guiMainInstance.memorySpikesCount == 1) {
             guiMainInstance.memorySpikesText.setText(
@@ -225,16 +228,16 @@ public class ThreadMain extends Thread {
     private void updateGuiForceCrash() {  
     	
         guiForceCrashInstance.crash.setText(
-                "The game was force crashed because of an insufficient memory allocation."
+        		applyString(crashInfoHeader)
         );
         guiForceCrashInstance.currentAllocation.setText(
-                "Your current memory allocation is " + maxMemory + "MB."
+        		applyString(crashInfoLine1)
         );
         guiForceCrashInstance.recommendedAllocation.setText(
-                "Please allocate " + recommendedMemoryAllocation + "MB before running."
+        		applyString(crashInfoLine2)
         );
         guiForceCrashInstance.crashInfo.setText(
-                info
+        		applyString(crashInfoFooter)
         );
         
     }
@@ -242,13 +245,25 @@ public class ThreadMain extends Thread {
     private void updateGuiErrorCrash(String errorLocation) {
     	
     	guiErrorCrashInstance.crash.setText(
-    			"The game was force crashed because of an illegal configuration."
+    			errorInfo
     	);
     	
     	guiErrorCrashInstance.crashInfo.setText(
     			errorLocation
     	);
     	
+    }
+    
+    private String applyString(String string) {
+    	String modifiedString = string;
+    	modifiedString = modifiedString.replace("[AllocatedMemory]", String.valueOf(maxMemory));
+    	modifiedString = modifiedString.replace("[RecommendedMemory]", String.valueOf(recommendedMemoryAllocation));
+    	modifiedString = modifiedString.replace("[RecommendedMemory-AllocatedMemory]", String.valueOf(recommendedMemoryAllocation - maxMemory));
+    	return modifiedString;
+    }
+    
+    private String applyStringError(String string, String errorLocation) {
+    	return null;
     }
 
 }

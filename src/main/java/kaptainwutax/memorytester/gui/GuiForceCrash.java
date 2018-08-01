@@ -107,7 +107,7 @@ public class GuiForceCrash extends JFrame {
 
         int buttonHeight = 40;
 
-    	if(threadInstance.redirectLink.equals("null")) {return;}
+    	if(threadInstance.crashRedirectLink == null || "null".equals(threadInstance.crashRedirectLink)) {return;}
     	
         JButton redirectButton = new JButton("Redirect");
         redirectButton.setEnabled(true);
@@ -120,7 +120,8 @@ public class GuiForceCrash extends JFrame {
             public void mouseClicked(MouseEvent arg0) {
             	Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
                 if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-                    try {desktop.browse(new URI(threadInstance.redirectLink));} catch (Exception e) {;}
+                    try {desktop.browse(new URI(threadInstance.crashRedirectLink));} catch (Exception e) {;}
+                    threadInstance.shouldGameStart = false;
                     frame.setEnabled(false);
                     frame.setVisible(false);          
                 }
