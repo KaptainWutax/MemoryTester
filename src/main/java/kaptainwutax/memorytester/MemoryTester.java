@@ -1,8 +1,14 @@
 package kaptainwutax.memorytester;
 
+import java.util.Set;
+
 import kaptainwutax.memorytester.utility.Constant;
 import kaptainwutax.memorytester.utility.PluginLoader;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Bootstrap;
+import net.minecraft.util.ReportedException;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.LoaderExceptionModCrash;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -18,13 +24,6 @@ public class MemoryTester {
     public static MemoryTester instance;
     
     @EventHandler
-    public static void construction(FMLConstructionEvent event) {
-    	if(!PluginLoader.thread.shouldGameStart) {
-        	FMLCommonHandler.instance().exitJava(0, false);
-    	}
-    }
-    
-    @EventHandler
     public static void preInit(FMLPreInitializationEvent event) {}
 
     @EventHandler
@@ -34,6 +33,12 @@ public class MemoryTester {
     public static void postInit(FMLPostInitializationEvent event) {
     	PluginLoader.thread.hasGameInitialized = true;
     	PluginLoader.thread.interrupt();
+    }
+    
+    public static void stopGame() {
+    	for(Thread t : Thread.getAllStackTraces().keySet())if(t != Thread.currentThread())t.stop();
+    	Thread.currentThread().stop();
+    	stopGame();
     }
 
 }

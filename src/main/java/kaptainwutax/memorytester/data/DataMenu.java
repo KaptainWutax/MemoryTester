@@ -22,7 +22,7 @@ public class DataMenu extends DataConfig {
 	public void populateFields() {
 		this.menuHeader = new DataUnit("Header", "string", "You have [AllocatedMemory]MB of memory allocated.");
 		this.menuLine1WhenOptimalMemory = new DataUnit("Line1WhenOptimalMemory", "string", "The pack recommends [RecommendedMemory]MB to run.");
-		this.menuLine1WhenNonoptimalMemory = new DataUnit("Line1WhenNonoptimalMemory", "string", "The pack recommends [RecommendedMemory]MB to run." + " Consider using [RecommendedMemory-AllocatedMemory]more.");
+		this.menuLine1WhenNonoptimalMemory = new DataUnit("Line1WhenNonoptimalMemory", "string", "The pack recommends [RecommendedMemory]MB to run." + " Consider using [RecommendedMemory-AllocatedMemory] more.");
 		this.menuButtonStartText = new DataUnit("ButtonStartText", "string", "Start");
 		this.menuButtonQuitText = new DataUnit("ButtonQuitText", "string", "Quit");
 		this.menuButtonStartDebugText = new DataUnit("ButtonStartDebugText", "string", "Start Debug");

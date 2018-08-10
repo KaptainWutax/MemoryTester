@@ -1,5 +1,7 @@
 package kaptainwutax.memorytester.data;
 
+import net.minecraft.client.Minecraft;
+
 public class DataUnit<T> {
 
 	private String name;

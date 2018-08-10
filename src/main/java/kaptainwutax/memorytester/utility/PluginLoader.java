@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import kaptainwutax.memorytester.MemoryTester;
 import kaptainwutax.memorytester.thread.ThreadMain;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
@@ -12,6 +13,7 @@ import net.minecraft.util.ReportedException;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.relauncher.FMLSecurityManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
@@ -24,7 +26,7 @@ public class PluginLoader implements IFMLLoadingPlugin {
     public PluginLoader() {
         thread.start();     
         while (thread.isInMenu) {
-            if (!thread.shouldGameStart)return;
+            if (!thread.shouldGameStart)MemoryTester.stopGame();
             try {Thread.currentThread().sleep(100);} catch (InterruptedException e) {;}         
         }
     }
