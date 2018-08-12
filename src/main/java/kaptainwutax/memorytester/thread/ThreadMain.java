@@ -9,8 +9,6 @@ import kaptainwutax.memorytester.gui.GuiMenu;
 import kaptainwutax.memorytester.init.InitData;
 
 public class ThreadMain extends Thread {
-
-	public int test;
 	
 	//GUI
 	public GuiMenu guiMenuInstance;
