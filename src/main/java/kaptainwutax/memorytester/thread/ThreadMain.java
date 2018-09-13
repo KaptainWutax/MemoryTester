@@ -46,7 +46,7 @@ public class ThreadMain extends Thread {
     public boolean shouldGameStart = true;
  
     //HELPERS
-    private String threadName;
+    private String threadName = "MemoryTesterThread";
     private long maxMemory;
     private long totalMemory;
     private long freeMemory;
@@ -55,7 +55,7 @@ public class ThreadMain extends Thread {
 
     @Override
     public void run() {
-        setThreadName("MemoryTesterThread");
+        setThreadName(threadName);
         initialize();
     }
     
@@ -85,7 +85,6 @@ public class ThreadMain extends Thread {
     
     private void setThreadName(String name) {
     	Thread.currentThread().setName(name);
-    	this.threadName = name;
     }
       
     private void updateMemoryStatistics() {

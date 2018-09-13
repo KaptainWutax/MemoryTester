@@ -122,6 +122,10 @@ public class DataConfig {
     
     public void resetFile() {
     	try {
+    		File configDir = new File("config/");
+    		if(!configDir.exists()) {
+    			configDir.mkdir();
+    		}
     		BufferedWriter writer = null;
         	File dir = new File(directory);
         	dir.mkdir();
